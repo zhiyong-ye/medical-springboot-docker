@@ -1,0 +1,63 @@
+# See http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+#公共环境配置
+
+#定义端口,默认8080
+server:
+  port: 8080
+  session-timeout: 60
+  error:
+    path: /error
+
+#选择环境配置
+spring:
+  profiles:
+    active: dev
+
+  mvc:
+    view:
+      prefix: /
+      suffix: .jsp
+#默认值为 /**
+    static-path-pattern: /**
+
+#默认值为 classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+
+#mybatis配置
+mybatis:
+  type-aliases-package: com.medical.entity
+  mapper-locations: classpath:mapper/*.xml
+  #type-handlers-package: type handlers 处理器包路径
+  #check-config-location: 检查 mybatis 配置是否存在，一般命名为 mybatis-config.xml
+  #config: mybatis 配置文件名称
+  #executor-type: 执行模式。默认是 SIMPLE
+
+#通用mapper工具
+mapper:
+  mappers: com.medical.core.mapper.BaseMapper
+  not-empty: false
+  identity: MYSQL
+
+#分页助手工具
+pagehelper:
+  helperDialect: mysql
+#reasonable表示分页合理化，如果pageNum<=0时候会查询第一页的数据。如果pageNum>总页数，会查询最后一页的数据。
+  reasonable: true
+  supportMethodsArguments: true
+  params: pageNum=pageNum;pageSize=pageSize;count=countSql;reasonable=reasonable;pageSizeZero=pageSizeZero
+
+#日志,使用多环境日志配置,必须取名为logback-spring.xml
+logging:
+  config: classpath:logback-spring.xml
+
+#debug: true
+#logging:
+#  file: logs/spring-boot-logging.log
+#  level:
+#    org:
+#      springframework: WARN
+#    com:
+#      medical:
+#        mapper: DEBUG

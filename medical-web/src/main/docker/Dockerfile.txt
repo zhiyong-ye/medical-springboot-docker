@@ -1,0 +1,7 @@
+FROM dockerfile/java:oracle-java8
+
+VOLUME /tmp
+ADD medical-web.jar /opt/medical-web/
+EXPOSE 8080
+WORKDIR /opt/medical-web/
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-Xms512m", "-Xmx1g", "-jar", "medical-web.jar"]

@@ -1,0 +1,64 @@
+# See http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+#test环境配置
+
+#端口
+server:
+  port: 8080
+
+#redis配置
+spring:
+  redis:
+    host: 127.0.0.1
+    password: 
+    port: 6379
+    pool:
+      max-idle: 100
+      min-idle: 1
+      max-active: 1000
+      max-wait: -1
+
+#jta配置
+  jta:
+    enabled: true
+    service: com.atomikos.icatch.standalone.UserTransactionServiceFactory
+    max-actives: 200
+    enable-logging: false
+
+    atomikos:
+      datasource:
+        bus:
+          unique-resource-name: bus
+          max-pool-size: 5
+          min-pool-size: 1
+          max-life-time: 20000
+          borrow-connection-timeout: 10000
+          xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
+          xa-properties:
+            username: root
+            password: root
+            url: jdbc:mysql://localhost:3306/bus?useUnicode=true&characterEncoding=utf-8
+
+        pay:
+          unique-resource-name: pay
+          max-pool-size: 5
+          min-pool-size: 1
+          max-life-time: 20000
+          borrow-connection-timeout: 10000
+          xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
+          xa-properties:
+            username: root
+            password: root
+            url: jdbc:mysql://localhost:3306/medical?useUnicode=true&characterEncoding=utf-8
+
+        user:
+          unique-resource-name: user
+          max-pool-size: 5
+          min-pool-size: 1
+          max-life-time: 20000
+          borrow-connection-timeout: 10000
+          xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
+          xa-properties:
+            username: root
+            password: root
+            url: jdbc:mysql://localhost:3306/user?useUnicode=true&characterEncoding=utf-8

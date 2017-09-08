@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+	<!-- 设置上下文名称 -->
+	<contextName>logback</contextName>
+	
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <property name="LOG_HOME" value="/logs" />
+    <property name="APP" value="medical" />
+    
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+    
+    <!-- 按照每天生成debug日志文件 -->
+    <appender name="FILEDEBUG"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}/${APP}/debug/log-debug-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>60</MaxHistory>
+            <!-- 指定日志文件的上限大小,到达这个值，将自动删除旧的日志 -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>100MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+    
+    <!-- 按照每天生成info日志文件 -->
+    <appender name="FILEINFO"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}/${APP}/info/log-info-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>60</MaxHistory>
+            <!-- 指定日志文件的上限大小,到达这个值，将自动删除旧的日志 -->
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>50MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+    
+	<!--     
+	日志异步到数据库
+    springboot默认的数据源org.apache.tomcat.jdbc.pool.DataSource
+         必须先创建日志表logging_event,logging_event_exception,logging_event_property,表见logback.db
+     -->
+    <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+            <driverClass>com.mysql.jdbc.Driver</driverClass>
+            <url>jdbc:mysql://localhost:3306/medical?useUnicode=true</url>
+            <user>root</user>
+            <password>root</password>
+        </connectionSource>
+        
+        <!-- 配置只录入error级别日志到数据库 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+        	<level>error</level>
+        	<onMatch>ACCEPT</onMatch>
+　　　　 		<onMismatch>DENY</onMismatch>
+		</filter>
+    </appender>
+
+	<!-- 测试环境+开发环境. 多个使用逗号隔开. -->
+	<springProfile name="test,dev">
+		<!-- 日志输出级别 -->
+	    <root level="INFO">
+	        <appender-ref ref="CONSOLE" />
+	        <appender-ref ref="FILEDEBUG" />
+	        <appender-ref ref="DB" />
+	    </root>
+	    
+		<!-- 记录sql执行语句 -->
+	    <logger name="com.medical.mapper" level="DEBUG"/>
+	</springProfile>
+	
+	<!-- 生产环境. -->
+	<springProfile name="prod">
+		<!-- 日志输出级别 -->
+	    <root level="INFO">
+	        <appender-ref ref="CONSOLE" />
+	        <appender-ref ref="FILEINFO" />
+	        <appender-ref ref="DB" />
+	    </root>
+	    
+	    <!-- 记录指定的包名日志,记录sql执行语句 -->
+	    <logger name="com.medical.mapper" level="DEBUG"/>
+	</springProfile>
+	
+</configuration>
