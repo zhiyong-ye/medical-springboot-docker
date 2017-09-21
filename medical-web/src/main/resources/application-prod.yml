@@ -3,7 +3,7 @@
 #prod环境配置
 
 medical:
-  muti-datasource-open: true #是否开启多数据源(true/false)
+  muti-datasource-open: true #是否开启多数据源,并开启jta事务(true/false)
   
 #druid单数据源
 mysql:
@@ -44,14 +44,12 @@ spring:
       max-active: 1000
       max-wait: -1
 
-#jta配置
+#jta + DruidXADataSource多数据源配置
   jta:
     enabled: true
     service: com.atomikos.icatch.standalone.UserTransactionServiceFactory
     max-actives: 200
     enable-logging: false
-#    log-dir: classpath:tx-logs
-#    transaction-manager-id: txManager
 
     atomikos:
       datasource:
@@ -79,7 +77,7 @@ spring:
           xa-properties:
             username: root
             password: root
-            url: jdbc:mysql://localhost:3306/medical?useUnicode=true&characterEncoding=utf-8
+            url: jdbc:mysql://localhost:3306/pay?useUnicode=true&characterEncoding=utf-8
 
         user:
           unique-resource-name: user

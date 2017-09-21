@@ -15,12 +15,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.medical.core.datasource.DataSourceType;
 import com.medical.core.datasource.DynamicDataSource;
 
 /**
- * MybatisConfig: mybatis + DruidXADataSource多数据源 + jta
+ * MybatisConfig: mybatis + DruidXADataSource多数据源 + atomikos(jta)
  *
  * @author ZHIYONG.YE
  * @email 773276516@qq.com
@@ -29,6 +30,7 @@ import com.medical.core.datasource.DynamicDataSource;
  */
 @Configuration
 @AutoConfigureAfter({ DataSourceConfig.class})
+@EnableTransactionManagement //开启事务管理器
 @MapperScan(basePackages = MybatisConfig.BASE_PACKAGE,sqlSessionFactoryRef = "sqlSessionFactory")
 public class MybatisConfig {
 

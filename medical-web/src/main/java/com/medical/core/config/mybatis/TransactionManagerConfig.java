@@ -24,7 +24,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
  *
  */
 @Configuration
-@EnableTransactionManagement
+@EnableTransactionManagement//开启事务管理器
 @ConditionalOnProperty(prefix = "medical", name = "muti-datasource-open", havingValue = "true")
 public class TransactionManagerConfig {
     
