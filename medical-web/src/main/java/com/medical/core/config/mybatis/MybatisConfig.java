@@ -7,9 +7,12 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
@@ -17,26 +20,29 @@ import com.medical.core.datasource.DataSourceType;
 import com.medical.core.datasource.DynamicDataSource;
 
 /**
- * MybatisConfig: mybatis + DruidDataSource多数据源
+ * MybatisConfig: mybatis + DruidXADataSource多数据源 + jta
  *
  * @author ZHIYONG.YE
  * @email 773276516@qq.com
  * @date 2017年8月15日 下午5:30:39
  * @version 1.0
  */
-/*@Configuration
-@AutoConfigureAfter({DataSourceConfig.class})
-@MapperScan(basePackages = MybatisConfigBack.BASE_PACKAGE,sqlSessionFactoryRef = "sqlSessionFactory")*/
-public class MybatisNoJTAConfig {
+@Configuration
+@AutoConfigureAfter({ DataSourceConfig.class})
+@MapperScan(basePackages = MybatisConfig.BASE_PACKAGE,sqlSessionFactoryRef = "sqlSessionFactory")
+public class MybatisConfig {
 
     //指定包扫描路径
     static final String BASE_PACKAGE = "com.medical.mapper";
     
+    //获取扫描mapper文件位置
+    static final String MAPPER_LOCATION = "classpath:/mapper/*.xml";
+
     /**
-     * 获取扫描mapper文件位置
+     * 注入singleDataSource
      */
-    @Value("${mysql.datasource.mapperLocations}")
-    private String MAPPER_LOCATION;
+    @Autowired
+    private DataSource singleDataSource;
     
     /**
      * 注入busDataSource
@@ -51,7 +57,6 @@ public class MybatisNoJTAConfig {
     private DataSource payDataSource;
     
     /**
-     * 
      * 注入userDataSource
      */
     @Autowired
@@ -67,6 +72,7 @@ public class MybatisNoJTAConfig {
      * @return
      */
     @Bean
+    @ConditionalOnProperty(prefix = "medical", name = "muti-datasource-open", havingValue = "true")
     public DynamicDataSource dynamicDataSource() {
         Map<Object, Object> targetDataSources = new HashMap<>();
         //此key必须和determineCurrentLookupKey()配置的值一致
@@ -77,32 +83,48 @@ public class MybatisNoJTAConfig {
         DynamicDataSource dynamicDataSource = new DynamicDataSource();
         //将多数据源加入路由
         dynamicDataSource.setTargetDataSources(targetDataSources);
-        System.out.println("busDataSource==========" + busDataSource);
         //设置默认的数据源:bus业务库
         dynamicDataSource.setDefaultTargetDataSource(busDataSource);
         return dynamicDataSource;
     }
-    
+
     /**
-     * 配置事务管理器
+     * 单数据源事务管理器配置
      * @param dataSource
      * @return
      * @throws Exception
      */
     @Bean
-    public DataSourceTransactionManager transactionManager(DynamicDataSource dynamicDataSource) 
+    @ConditionalOnProperty(prefix = "medical", name = "muti-datasource-open", havingValue = "false")
+    public DataSourceTransactionManager transactionManager() 
             throws Exception {
-        return new DataSourceTransactionManager(dynamicDataSource);
+        return new DataSourceTransactionManager(singleDataSource);
     }
     
+    /**
+     * 设置单数据源SqlSessionFactory
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "medical", name = "muti-datasource-open", havingValue = "false")
+    public SqlSessionFactory sqlSessionFactory()
+            throws Exception {
+        final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+        sessionFactory.setDataSource(singleDataSource);
+        sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
+                .getResources(MAPPER_LOCATION));
+        return sessionFactory.getObject();
+    }
     
     /**
-     * 设置sqlSessionFactory
+     * 设置多数据源sqlSessionFactory
      * @param dynamicDataSource
      * @return
      * @throws Exception
      */
     @Bean
+    @ConditionalOnProperty(prefix = "medical", name = "muti-datasource-open", havingValue = "true")
     public SqlSessionFactory sqlSessionFactory(DynamicDataSource dynamicDataSource)
             throws Exception {
         final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();

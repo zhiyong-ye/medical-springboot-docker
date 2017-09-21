@@ -3,14 +3,13 @@ package com.medical.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.medical.entity.User;
@@ -45,6 +44,18 @@ public class UserService {
      */
     @Autowired
     private ProductMapper productMapper;
+    
+    /**
+     * 注入busJdbcTemplate
+     */
+    @Autowired
+    private JdbcTemplate busJdbcTemplate;
+    
+    /**
+     * 注入userJdbcTemplate
+     */
+    @Autowired
+    private JdbcTemplate userJdbcTemplate;
     
     /**
      * 注入redis操作类
@@ -90,7 +101,6 @@ public class UserService {
         return userMapper.selectOne(user);
     }
 
-    
     public Object saveUser(User user) {
         try {
             this.saveUserOpt(user);
@@ -100,12 +110,13 @@ public class UserService {
         
         System.out.println("productMapper===============");
         
-        return userMapper.selectOne(user);
+        return "";
     }
 
     @Transactional
-    @Rollback(true)
-    public void saveUserOpt(User user) throws Exception {
+    public void saveUserOpt(User user) {
+//        userJdbcTemplate.execute("insert into user(USER_NAME) values('123')");
+//        busJdbcTemplate.execute("insert into user(USER_NAME) values('123')");
         userMapper.insert(user);
         productMapper.insert(user);
     }

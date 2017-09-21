@@ -12,7 +12,7 @@ server:
 #选择环境配置
 spring:
   profiles:
-    active: dev
+    active: prod
 
   mvc:
     view:
