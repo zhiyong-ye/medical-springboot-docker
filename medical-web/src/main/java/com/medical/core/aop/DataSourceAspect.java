@@ -43,7 +43,7 @@ public class DataSourceAspect {
     public void dataSourceAspect(){}
     
     /**
-     * 
+     * aop切入点处理: 获取方法上和接口上的自定义数据源注解,方法上优先处理,切换数据源
      * @param joinPoint
      */
     @Before("dataSourceAspect()")

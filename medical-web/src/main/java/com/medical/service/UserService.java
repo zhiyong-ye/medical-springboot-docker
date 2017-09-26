@@ -3,8 +3,6 @@ package com.medical.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.transaction.UserTransaction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.medical.core.util.SpringApplicationUtil;
+import com.medical.core.datasource.JtaTransactional;
 import com.medical.entity.User;
 import com.medical.entity.request.PageRequest;
 import com.medical.mapper.ProductMapper;
@@ -105,11 +103,12 @@ public class UserService {
         return "";
     }
 
+    @JtaTransactional
     public void saveUserOpt(User user) {
-/*        userMapper.insert(user);
+        userMapper.insert(user);
         System.out.println(user.getId());
-        productMapper.insert(user);*/
-        
+        productMapper.insert(user);
+/*        
         //不同数据源,实现jta分布式事务,采用手动编程式
         UserTransaction userTransaction = SpringApplicationUtil.getBean("userTransaction",UserTransaction.class);
         try {
@@ -126,7 +125,7 @@ public class UserService {
             } catch (Exception e1) {
                 e1.printStackTrace();
             } 
-        }
+        }*/
         
     }
 }

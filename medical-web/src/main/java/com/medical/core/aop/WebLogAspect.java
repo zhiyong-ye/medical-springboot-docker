@@ -49,7 +49,7 @@ public class WebLogAspect {
     private Logger logger = LoggerFactory.getLogger(WebLogAspect.class);
     
     /**
-     * 解决同步时间问题
+     * 解决时间线程同步问题
      */
     ThreadLocal<Long> startTime = new ThreadLocal<Long>();
     
