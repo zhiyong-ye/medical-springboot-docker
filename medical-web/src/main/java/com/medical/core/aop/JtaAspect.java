@@ -16,8 +16,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.atomikos.icatch.jta.UserTransactionImp;
 import com.medical.core.datasource.JtaTransactional;
-import com.medical.core.util.SpringApplicationUtil;
 
 /**
  * 
@@ -47,7 +47,7 @@ public class JtaAspect {
     /**
      * 定义切面表达式
      */
-    @Pointcut("execution(public * com.medical.*.*.*(..))")
+    @Pointcut("execution(public * com.medical.service.*.*(..))")
     public void jtaAspect(){}
     
     /**
@@ -57,15 +57,17 @@ public class JtaAspect {
     @Before("jtaAspect()")
     public void doBefore(JoinPoint joinPoint) {
         Object target = joinPoint.getTarget();
+        String methodName = joinPoint.getSignature().getName();
 
         try {
             Method[] methods = target.getClass().getDeclaredMethods();
             for (Method method : methods) {
-                if (method.isAnnotationPresent(JtaTransactional.class)) {
+                if (methodName.equals(method.getName()) && method.isAnnotationPresent(JtaTransactional.class)) {
                     //获取jta分布式事务对象,放入线程变量中,且开启事务
-                    UserTransaction userTransaction = SpringApplicationUtil.getBean("userTransaction",UserTransaction.class);
-                    userTransactionThreadLocal.set(userTransaction);
-                    userTransaction.begin();
+                    UserTransactionImp userTransactionImp = new UserTransactionImp();
+                    userTransactionImp.setTransactionTimeout(3000);
+                    userTransactionThreadLocal.set(userTransactionImp);
+                    userTransactionImp.begin();
                     break;
                 }
             }
@@ -83,11 +85,12 @@ public class JtaAspect {
     @AfterThrowing("jtaAspect()")
     public void doAfterThrowing(JoinPoint joinPoint) {
         Object target = joinPoint.getTarget();
+        String methodName = joinPoint.getSignature().getName();
         
         try {
             Method[] methods = target.getClass().getDeclaredMethods();
             for (Method method : methods) {
-                if (method.isAnnotationPresent(JtaTransactional.class)) {
+                if (methodName.equals(method.getName()) && method.isAnnotationPresent(JtaTransactional.class)) {
                     //获取线程变量中的jta分布式事务对象,回滚事务
                     UserTransaction userTransaction = userTransactionThreadLocal.get();
                     userTransaction.rollback();
@@ -108,12 +111,13 @@ public class JtaAspect {
     @AfterReturning("jtaAspect()")
     public void doAfterReturning(JoinPoint joinPoint) {
         Object target = joinPoint.getTarget();
+        String methodName = joinPoint.getSignature().getName();
         
         try {
             Method[] methods = target.getClass().getDeclaredMethods();
             for (Method method : methods) {
-                if (method.isAnnotationPresent(JtaTransactional.class)) {
-                    //获取线程变量中的事务对象,且事务对象不为空时,提交事务
+                if (methodName.equals(method.getName()) && method.isAnnotationPresent(JtaTransactional.class)) {
+                  //获取线程变量中的事务对象,且事务对象不为空时,提交事务
                     UserTransaction userTransaction = userTransactionThreadLocal.get();
                     if (userTransaction != null) {
                         userTransaction.commit();

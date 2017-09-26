@@ -96,6 +96,7 @@ public class UserService {
      * @return
      */
 //    @Transactional 
+    @JtaTransactional
     public Object saveUser(User user) {
         this.saveUserOpt(user);
         System.out.println("productMapper===============");
@@ -103,7 +104,6 @@ public class UserService {
         return "";
     }
 
-    @JtaTransactional
     public void saveUserOpt(User user) {
         userMapper.insert(user);
         System.out.println(user.getId());
