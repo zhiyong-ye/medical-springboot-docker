@@ -26,7 +26,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     @Override
     protected Object determineCurrentLookupKey() {
         DataSourceType dataSouce = DynamicDataSourceContextHolder.getDataSouce();
-        logger.info("DynamicDataSource: " + dataSouce==null?"":dataSouce.getType());
+        logger.info("==DynamicDataSource: " + dataSouce==null?"":dataSouce.getType() + "==DynamicDataSource==");
         return StringUtils.isEmpty(dataSouce)?null:dataSouce.getType();
     }
 

@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -42,7 +43,7 @@ import com.medical.core.datasource.DynamicDataSource;
  * @version 1.0
  */
 @Configuration
-@EnableTransactionManagement //开启事务管理器
+@EnableTransactionManagement(proxyTargetClass = true) //开启事务管理器
 @MapperScan(basePackages = SystemConstant.BASE_PACKAGE,sqlSessionFactoryRef = "sqlSessionFactory")
 @ConditionalOnProperty(prefix = "medical", name = "muti-datasource-open", havingValue = "true")
 public class MybatisJtaConfig {
@@ -134,7 +135,7 @@ public class MybatisJtaConfig {
     @Bean(name = "atomikosTransactionManager", initMethod = "init", destroyMethod = "close")
     public TransactionManager atomikosTransactionManager() throws Throwable {
             UserTransactionManager userTransactionManager = new UserTransactionManager();
-            userTransactionManager.setForceShutdown(false);
+            userTransactionManager.setForceShutdown(true);
             return userTransactionManager;
     }
 
@@ -146,10 +147,10 @@ public class MybatisJtaConfig {
      */
     @Bean(name = "transactionManager")
     @DependsOn({ "userTransaction", "atomikosTransactionManager" })
-    public JtaTransactionManager jtaTransactionManager() throws Throwable {
+    public JtaTransactionManager transactionManager() throws Throwable {
             JtaTransactionManager manager = new JtaTransactionManager(userTransaction(), atomikosTransactionManager());
             logger.info("============transactionManager: " + manager.toString() + "===========");
-//            manager.setAllowCustomIsolationLevels(true);
+            manager.setAllowCustomIsolationLevels(true);
             return manager;
     }
     
@@ -159,11 +160,11 @@ public class MybatisJtaConfig {
      * @return
      */
     @Bean(name = "transactionInterceptor")
-    public TransactionInterceptor transactionInterceptor(@Qualifier("transactionManager")JtaTransactionManager transactionManager) {
+    public TransactionInterceptor transactionInterceptor(PlatformTransactionManager platformTransactionManager) {
             TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
             // 事物管理器
-            transactionInterceptor.setTransactionManager(transactionManager);
-            logger.info("====transactionInterceptor transactionManager: " + transactionManager.toString() + "====");
+            transactionInterceptor.setTransactionManager(platformTransactionManager);
+            logger.info("====transactionInterceptor platformTransactionManager: " + platformTransactionManager.toString() + "====");
             Properties transactionAttributes = new Properties();
 
             // 新增

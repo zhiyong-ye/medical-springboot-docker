@@ -135,7 +135,9 @@
             <!-- optional=true,依赖不会传递，该项目依赖devtools；之后依赖该项目的项目如果想要使用devtools，需要重新引入 -->
             <scope>true</scope>
 		</dependency>
+		
     </dependencies>
+    
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
@@ -148,6 +150,7 @@
                 	<executable>true</executable>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
@@ -164,6 +167,7 @@
                     </resources>
                 </configuration>
             </plugin>
+            
             <!-- Copy Dockerfile -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -186,6 +190,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
@@ -204,6 +209,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -228,4 +234,5 @@
             </plugin>
         </plugins>
     </build>
+    
 </project>

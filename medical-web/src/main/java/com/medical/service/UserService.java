@@ -3,14 +3,16 @@ package com.medical.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.transaction.UserTransaction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.medical.core.util.SpringApplicationUtil;
 import com.medical.entity.User;
 import com.medical.entity.request.PageRequest;
 import com.medical.mapper.ProductMapper;
@@ -50,9 +52,6 @@ public class UserService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
     
-//    @Autowired
-//    private JtaTransactionManager transactionManager;
-    
     /**
      * 查询用户列表
      * @param pageRequest 
@@ -91,42 +90,43 @@ public class UserService {
         return userMapper.selectOne(user);
     }
 
+    /**
+     * 注解@Transactional,只能加在外层service,且使用后不能切换数据源,
+     * 第二个以后数据库操作，会默认使用第一个数据库操作数据源。同一数据源,事务可以采用。
+     * 若想实现jta分布式事务,得采用手动编程式实现,
+     * @param user
+     * @return
+     */
+//    @Transactional 
     public Object saveUser(User user) {
-        try {
-            this.saveUserOpt(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
+        this.saveUserOpt(user);
         System.out.println("productMapper===============");
         
         return "";
     }
 
-    @Transactional
     public void saveUserOpt(User user) {
-        userMapper.insert(user);
+/*        userMapper.insert(user);
         System.out.println(user.getId());
-        productMapper.insert(user);
+        productMapper.insert(user);*/
         
-        
-//        UserTransaction userTransaction = transactionManager.getUserTransaction();
-//        try {
-//            userTransaction.begin();
-//            userMapper.insert(user);
-//            System.out.println(user.getId());
-//            productMapper.insert(user);
-//            userTransaction.commit();
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//            try {
-//                userTransaction.rollback();
-//            } catch (Exception e1) {
-//                e1.printStackTrace();
-//            } 
-//        }
-        
+        //不同数据源,实现jta分布式事务,采用手动编程式
+        UserTransaction userTransaction = SpringApplicationUtil.getBean("userTransaction",UserTransaction.class);
+        try {
+            userTransaction.begin();
+            userMapper.insert(user);
+            System.out.println(user.getId());
+            productMapper.insert(user);
+            userTransaction.commit();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            try {
+                userTransaction.rollback();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            } 
+        }
         
     }
 }
