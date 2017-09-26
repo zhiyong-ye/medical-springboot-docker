@@ -25,6 +25,6 @@ public class ResponseCode implements Serializable {
     /**
      * 失败
      */
-    public static final int FAILER = 300;
+    public static final int FAILER = 500;
 
 }

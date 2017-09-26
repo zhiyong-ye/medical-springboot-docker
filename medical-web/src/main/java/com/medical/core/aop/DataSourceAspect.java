@@ -27,14 +27,14 @@ import com.medical.core.datasource.DynamicDataSourceContextHolder;
  */
 @Aspect
 @Component
-@Order(5)
+@Order(1)
 @ConditionalOnProperty(prefix = "medical", name = "muti-datasource-open", havingValue = "true")
 public class DataSourceAspect {
     
     /**
      * 日志记录
      */
-    private Logger logger = LoggerFactory.getLogger(WebLogAspect.class);
+    private Logger logger = LoggerFactory.getLogger(DataSourceAspect.class);
 
     /**
      * 定义切面表达式
@@ -56,19 +56,19 @@ public class DataSourceAspect {
         Class<?>[] parameterTypes = ((MethodSignature) joinPoint.getSignature())
                         .getMethod().getParameterTypes();
         try {
-            DataSource dataSource = null;
+            DataSourceType dataSourceType = null;
             Method m = classz[0].getMethod(method, parameterTypes);
             //如果方法上的注解是datasourse,则优先使用方法上的数据源注解,否则使用接口上的数据源注解
             if (m != null && m.isAnnotationPresent(DataSource.class)) {
-                dataSource = m.getAnnotation(DataSource.class);
-                DynamicDataSourceContextHolder.putDataSource(dataSource.value());
+                dataSourceType = m.getAnnotation(DataSource.class).value();
+                DynamicDataSourceContextHolder.putDataSource(dataSourceType);
             }else{
                 //连接数据库的mapper
                 logger.info("mapper: " + classz[0].getName());
                 //使用接口上的数据源注解
                 DataSource[] dataSources = classz[0].getDeclaredAnnotationsByType(DataSource.class);
                 if(dataSources != null && dataSources.length > 0){
-                    DataSourceType dataSourceType = dataSources[0].value();
+                    dataSourceType = dataSources[0].value();
                     logger.info(classz[0].getName() + " annotation: " + dataSourceType.getType());
                     DynamicDataSourceContextHolder.putDataSource(dataSourceType);
                 }else{
@@ -77,6 +77,7 @@ public class DataSourceAspect {
             }
         } catch (Exception e) {
                 e.printStackTrace();
+                logger.info("==============DataSourceAspect Exception================");
         }
     }
 }

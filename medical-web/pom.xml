@@ -37,6 +37,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+			<!-- 排除自带的tomcat依赖 -->            
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.springframework.boot</groupId>
+            		<artifactId>spring-boot-starter-tomcat</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- jetty容器 -->
+        <dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-starter-jetty</artifactId>
         </dependency>
         
         <!--添加适用于生产环境的功能，如性能指标和监测等功能。暂时不会使用 -->
@@ -49,7 +62,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <!-- <scope>test</scope> -->
         </dependency>
         
         <!-- JTA -->
@@ -131,7 +144,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                 	<!--fork :  如果没有该项配置，则devtools不会起作用，即应用不会restart -->
-                	<fork>true</fork>	
+                	<fork>true</fork>
+                	<executable>true</executable>
                 </configuration>
             </plugin>
             <plugin>

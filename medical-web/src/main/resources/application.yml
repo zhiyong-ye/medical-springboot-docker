@@ -5,9 +5,13 @@
 #定义端口,默认8080
 server:
   port: 8080
+  context-path: /medical
   session-timeout: 60
   error:
     path: /error
+  tomcat:
+    max-threads: 800
+    uri-encoding: UTF-8
 
 #选择环境配置
 spring:
@@ -25,10 +29,10 @@ spring:
   resources:
     static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
 
-#mybatis配置
+#mybatis配置,包扫描地址、mapper文件扫描在SystemConstant配置
 mybatis:
   type-aliases-package: com.medical.entity
-  mapper-locations: classpath:mapper/*.xml
+  #mapper-locations: classpath:mapper/*.xml
   #type-handlers-package: type handlers 处理器包路径
   #check-config-location: 检查 mybatis 配置是否存在，一般命名为 mybatis-config.xml
   #config: mybatis 配置文件名称

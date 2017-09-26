@@ -83,13 +83,13 @@ public class WebLogAspect {
         logger.info("IP : " + request.getRemoteAddr());
         logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
         logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
-        
-        //获取所有参数
-        Enumeration<String> enu = request.getParameterNames();
-        while (enu.hasMoreElements()) {
-            String paraName = (String) enu.nextElement();
-            System.out.println(paraName + ": " + request.getParameter(paraName));
-        }
+        logger.info("REQUEST_PARAMS: ");
+        Arrays.asList(request.getParameterNames()).forEach((Enumeration<String> enu) -> {
+            while (enu.hasMoreElements()) {
+                String paramName = (String) enu.nextElement();
+                logger.info(paramName + ": " + request.getParameter(paramName));
+            }
+        });
         
     }
     
@@ -103,4 +103,5 @@ public class WebLogAspect {
         logger.info("WebLogAspect.doAfterReturning()");
         logger.info("耗时(毫秒) : " + (System.currentTimeMillis() - startTime.get()));
     }
+    
 }

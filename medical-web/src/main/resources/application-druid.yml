@@ -1,6 +1,6 @@
 # See http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 
-#Druid多数据源环境配置
+#Druid多数据源环境配置,无jta
 
 #端口
 server:

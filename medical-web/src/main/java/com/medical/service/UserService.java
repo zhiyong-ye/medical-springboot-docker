@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,22 +45,13 @@ public class UserService {
     private ProductMapper productMapper;
     
     /**
-     * 注入busJdbcTemplate
-     */
-    @Autowired
-    private JdbcTemplate busJdbcTemplate;
-    
-    /**
-     * 注入userJdbcTemplate
-     */
-    @Autowired
-    private JdbcTemplate userJdbcTemplate;
-    
-    /**
      * 注入redis操作类
      */
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    
+//    @Autowired
+//    private JtaTransactionManager transactionManager;
     
     /**
      * 查询用户列表
@@ -115,9 +105,28 @@ public class UserService {
 
     @Transactional
     public void saveUserOpt(User user) {
-//        userJdbcTemplate.execute("insert into user(USER_NAME) values('123')");
-//        busJdbcTemplate.execute("insert into user(USER_NAME) values('123')");
         userMapper.insert(user);
+        System.out.println(user.getId());
         productMapper.insert(user);
+        
+        
+//        UserTransaction userTransaction = transactionManager.getUserTransaction();
+//        try {
+//            userTransaction.begin();
+//            userMapper.insert(user);
+//            System.out.println(user.getId());
+//            productMapper.insert(user);
+//            userTransaction.commit();
+//        } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//            try {
+//                userTransaction.rollback();
+//            } catch (Exception e1) {
+//                e1.printStackTrace();
+//            } 
+//        }
+        
+        
     }
 }

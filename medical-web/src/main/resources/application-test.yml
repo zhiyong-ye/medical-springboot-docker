@@ -2,9 +2,13 @@
 
 #test环境配置
 
+#端口
+server:
+  port: 8080
+
 medical:
   muti-datasource-open: true #是否开启多数据源,并开启jta事务(true/false)
-  
+
 #druid单数据源
 mysql:
   datasource:
@@ -27,10 +31,6 @@ mysql:
     maxPoolPreparedStatementPerConnectionSize: 50
     removeAbandoned: true
     filters: stat
-
-#端口
-server:
-  port: 8080
 
 #redis配置
 spring:

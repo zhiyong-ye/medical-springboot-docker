@@ -1,5 +1,7 @@
 package com.medical.core.datasource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.util.StringUtils;
 
@@ -14,11 +16,17 @@ import org.springframework.util.StringUtils;
 public class DynamicDataSource extends AbstractRoutingDataSource {
 
     /**
+     * 日志
+     */
+    private Logger logger = LoggerFactory.getLogger(DynamicDataSource.class);
+    
+    /**
      * 获取数据源
      */
     @Override
     protected Object determineCurrentLookupKey() {
         DataSourceType dataSouce = DynamicDataSourceContextHolder.getDataSouce();
+        logger.info("DynamicDataSource: " + dataSouce==null?"":dataSouce.getType());
         return StringUtils.isEmpty(dataSouce)?null:dataSouce.getType();
     }
 
