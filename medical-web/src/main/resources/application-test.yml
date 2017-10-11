@@ -14,7 +14,7 @@ mysql:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/user?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/bus?useUnicode=true&characterEncoding=utf-8
     username: root
     password: root
     minIdle: 5
@@ -36,7 +36,7 @@ mysql:
 spring:
   redis:
     host: 127.0.0.1
-    password: 
+    password: admin
     port: 6379
     pool:
       max-idle: 100
