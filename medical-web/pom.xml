@@ -18,6 +18,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>com.medical.App</start-class>
+        <!-- spring-boot-starter-parent默认编译版本为1.6，需要更改为1.8 -->
         <java.version>1.8</java.version>
         <docker.image.prefix>${user.name}</docker.image.prefix>
         
@@ -102,7 +103,6 @@
      	<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql-connector-java}</version>
 		</dependency>
 		
 		<!--mybatis-->
@@ -130,7 +130,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-            <version>${spring-boot-devtools}</version>
             <optional>true</optional>
             <!-- optional=true,依赖不会传递，该项目依赖devtools；之后依赖该项目的项目如果想要使用devtools，需要重新引入 -->
             <scope>true</scope>
@@ -213,7 +212,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
                 <executions>
                     <execution>
                         <id>zip-files</id>

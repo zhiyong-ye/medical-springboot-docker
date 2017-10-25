@@ -7,14 +7,14 @@ server:
   port: 8080
 
 medical:
-  muti-datasource-open: true #是否开启多数据源,并开启jta事务(true/false)
+  muti-datasource-open: false #是否开启多数据源,并开启jta事务(true/false)
 
 #druid单数据源
 mysql:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bus?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/bus?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: root
     password: root
     minIdle: 5
@@ -64,7 +64,7 @@ spring:
           xa-properties:
             username: root
             password: root
-            url: jdbc:mysql://localhost:3306/bus?useUnicode=true&characterEncoding=utf-8
+            url: jdbc:mysql://localhost:3306/bus?useUnicode=true&characterEncoding=utf-8&useSSL=false
 
         pay:
           unique-resource-name: pay
@@ -77,7 +77,7 @@ spring:
           xa-properties:
             username: root
             password: root
-            url: jdbc:mysql://localhost:3306/pay?useUnicode=true&characterEncoding=utf-8
+            url: jdbc:mysql://localhost:3306/pay?useUnicode=true&characterEncoding=utf-8&useSSL=false
 
         user:
           unique-resource-name: user
@@ -90,4 +90,4 @@ spring:
           xa-properties:
             username: root
             password: root
-            url: jdbc:mysql://localhost:3306/user?useUnicode=true&characterEncoding=utf-8
+            url: jdbc:mysql://localhost:3306/user?useUnicode=true&characterEncoding=utf-8&useSSL=false

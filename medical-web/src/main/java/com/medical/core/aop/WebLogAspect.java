@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -102,6 +103,8 @@ public class WebLogAspect {
         //处理完请求,返回内容
         logger.info("WebLogAspect.doAfterReturning()");
         logger.info("耗时(毫秒) : " + (System.currentTimeMillis() - startTime.get()));
+        Object target = joinPoint.getTarget();
+        Signature signature = joinPoint.getSignature();
     }
     
 }
